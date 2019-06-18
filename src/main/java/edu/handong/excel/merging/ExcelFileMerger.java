@@ -17,8 +17,10 @@ public class ExcelFileMerger {
 		Options options = cliOptions.createOptions();
 		if (cliOptions.parseOptions(options, args)) {
 			String inputPath = cliOptions.getInputPath();
-			String outputPath1 = cliOptions.getOutputPath().substring(0, cliOptions.getOutputPath().indexOf("."))+"1.csv";
-			String outputPath2 = cliOptions.getOutputPath().substring(0, cliOptions.getOutputPath().indexOf("."))+"2.csv";
+			String outputPath1 = cliOptions.getOutputPath().substring(0, cliOptions.getOutputPath().indexOf("."))+"1"+
+					cliOptions.getOutputPath().substring(cliOptions.getOutputPath().indexOf("."), cliOptions.getOutputPath().length());
+			String outputPath2 = cliOptions.getOutputPath().substring(0, cliOptions.getOutputPath().indexOf("."))+"2"+
+					cliOptions.getOutputPath().substring(cliOptions.getOutputPath().indexOf("."), cliOptions.getOutputPath().length());
 
 			if (cliOptions.isHelp()) {
 				cliOptions.printHelp(options);
