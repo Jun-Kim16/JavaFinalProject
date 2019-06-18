@@ -1,55 +1,50 @@
 package edu.handong.excel.merging;
 	
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.TreeMap;
 
 import org.apache.commons.cli.Options;
 
-import edu.handong.excel.merging.threads.ReadingThread;
+import edu.handong.excel.merging.data.DataPool;
 import edu.handong.excel.merging.threads.WritingThread;
+import edu.handong.excel.merging.utils.ZipReader;
 
 public class ExcelFileMerger {
-	private static TreeMap<String, HashMap<Integer,ArrayList<String>>> mapFromStuToExcel
-					= new TreeMap<String, HashMap<Integer,ArrayList<String>>>();
+	private static TreeMap<String ,ArrayList<DataPool>> totalData = new TreeMap<String ,ArrayList<DataPool>>();
 	
 	public void run(String[] args) {
 		CliOptions cliOptions = new CliOptions();
 		Options options = cliOptions.createOptions();
-
 		if (cliOptions.parseOptions(options, args)) {
 			String inputPath = cliOptions.getInputPath();
-			String outputPath = cliOptions.getOutputPath();
+			String outputPath1 = cliOptions.getOutputPath1();
+			String outputPath2 = cliOptions.getOutputPath2();
 
 			if (cliOptions.isHelp()) {
 				cliOptions.printHelp(options);
 				return;
 			}
-
 			
-			ReadingThread in1 = new ReadingThread(inputPath, 1, mapFromStuToExcel);
-			in1.start();
-			ReadingThread in2 = new ReadingThread(inputPath, 2, mapFromStuToExcel);
-			in2.start();
-			ReadingThread in3 = new ReadingThread(inputPath, 3, mapFromStuToExcel);
-			in3.start();
-			ReadingThread in4 = new ReadingThread(inputPath, 4, mapFromStuToExcel);
-			in4.start();
-			ReadingThread in5 = new ReadingThread(inputPath, 5, mapFromStuToExcel);
-			in5.start();
+			ZipReader.readFileInZip(inputPath+"\\0001.zip", totalData);
+			ZipReader.readFileInZip(inputPath+"\\0002.zip", totalData);
+			ZipReader.readFileInZip(inputPath+"\\0003.zip", totalData);
+			ZipReader.readFileInZip(inputPath+"\\0004.zip", totalData);
+			ZipReader.readFileInZip(inputPath+"\\0005.zip", totalData);
 			
-			try {	
-				in1.join();in2.join();in3.join();in4.join();in5.join();
+			WritingThread it1 = new WritingThread(outputPath1, 1, totalData); //쓰는 동시에 읽어야하므로 InputThread생성
+			it1.start();
+			WritingThread it2 = new WritingThread(outputPath2, 2, totalData);
+			it2.start();
+			
+			
+			try {
+				it1.join();
+				it2.join();
 			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
-			WritingThread out0 = new WritingThread(outputPath, 1, mapFromStuToExcel);
-			out0.start();
-			
-			WritingThread out1 = new WritingThread(outputPath, 2, mapFromStuToExcel);
-			out1.start();
-			
+			System.out.println("Fin");
 		}
 	}
 }

@@ -1,59 +1,101 @@
 package edu.handong.excel.merging.threads;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.TreeMap;
 
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.ss.usermodel.DataFormatter;
+
+import edu.handong.excel.merging.data.DataPool;
+import edu.handong.excel.merging.utils.WriteCsv;
 
 public class WritingThread extends Thread {
 
-	XSSFWorkbook workbook = new XSSFWorkbook();
-	XSSFSheet sheet = workbook.createSheet("Datatypes in Java");
 	String outputPath = null;
-	int version = -1;
+	int type = -1;
 	int rowNum = 0;
-	TreeMap<String, HashMap<Integer, ArrayList<String>>> mapFromStuToExcel = null;
-
-	public WritingThread(String path, int i, TreeMap<String, HashMap<Integer, ArrayList<String>>> hm) {
+	TreeMap<String, ArrayList<DataPool>> mapNumToExcel = null;
+	private DataFormatter dataForm = new DataFormatter();
+	ArrayList<String> lines = new ArrayList<String>();
+	
+	public WritingThread(String path, int type, TreeMap<String, ArrayList<DataPool>> hm) {
 		outputPath = path;
-		version = i;
-		mapFromStuToExcel = hm;
+		this.type = type;
+		synchronized(hm) {
+			mapNumToExcel = hm;
+		}
+
 	}
 	
 	public void run() {
+		for(String key : mapNumToExcel.keySet()) {
+			if (type==1) {
+				if(key=="0001_1")makeRow1(lines, key.split("_")[0], mapNumToExcel.get(key), true);
+				else if(key.contains("_1")) makeRow1(lines, key.split("_")[0], mapNumToExcel.get(key), false);
+			}
+			else {
+				if(key=="0001_2")makeRow2(lines, key.split("_")[0], mapNumToExcel.get(key), true);
+				else if(key.contains("_2")) makeRow2(lines, key.split("_")[0], mapNumToExcel.get(key), false);
+			}
+		}
+		WriteCsv.writeAFile(lines, outputPath);
+		System.out.println("Done");
+	}
+
+	public void makeRow1(ArrayList<String> lines,String fileNum, ArrayList<DataPool> row, boolean isheader){
 		
-		for (String stu_ver : mapFromStuToExcel.keySet()) {
-			if (stu_ver.contains("_" + Integer.toString(version))) {
-				rowNum = 0;
-				for (Integer rowLine : mapFromStuToExcel.get(stu_ver).keySet()) {
-					Row row = sheet.createRow(rowNum++);
-					int colNum = 0;
-					for (String col : mapFromStuToExcel.get(stu_ver).get(rowLine)) {
-						Cell cell = row.createCell(colNum++);
-						if (col instanceof String) {
-							cell.setCellValue((String) col);
-						} 
-					}
-				}
+		if(isheader) {
+			for(DataPool data : row) {
+				lines.add("\"" + fileNum + "\"" + "," 
+						+ "\"" + dataForm.formatCellValue(data.getC0())+ "\"" + "," 
+						+ "\"" + dataForm.formatCellValue(data.getC1())+ "\"" + "," 
+						+ "\"" + dataForm.formatCellValue(data.getC2())+ "\"" + "," 
+						+ "\"" + dataForm.formatCellValue(data.getC3())+ "\"" + "," 
+						+ "\"" + dataForm.formatCellValue(data.getC4())+ "\"" + ","
+						+ "\"" + dataForm.formatCellValue(data.getC5())+ "\"" + ","
+						+ "\"" + dataForm.formatCellValue(data.getC6())+ "\"") ;
+			}	
+		}
+		else {
+			for(int i = 1; i < row.size(); i++) {
+				DataPool data = row.get(i);
+				lines.add("\"" + fileNum + "\"" + "," 
+						+ "\"" + dataForm.formatCellValue(data.getC0())+ "\"" + "," 
+						+ "\"" + dataForm.formatCellValue(data.getC1())+ "\"" + "," 
+						+ "\"" + dataForm.formatCellValue(data.getC2())+ "\"" + "," 
+						+ "\"" + dataForm.formatCellValue(data.getC3())+ "\"" + "," 
+						+ "\"" + dataForm.formatCellValue(data.getC4())+ "\"" + ","
+						+ "\"" + dataForm.formatCellValue(data.getC5())+ "\"" + ","
+						+ "\"" + dataForm.formatCellValue(data.getC6())+ "\"") ;
 			}
 		}
 		
-		try {
-			FileOutputStream outputStream = new FileOutputStream(outputPath.substring(0, outputPath.length()-4)+"_"+Integer.toString(version)+".xls");
-			workbook.write(outputStream);
-			workbook.close();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
+	}
+	
+public void makeRow2(ArrayList<String> lines,String fileNum, ArrayList<DataPool> row, boolean isheader){
+		
+		if(isheader) {
+			for(DataPool data : row) {
+				lines.add("\"" + fileNum + "\"" + "," 
+						+ "\"" + dataForm.formatCellValue(data.getC0())+ "\"" + "," 
+						+ "\"" + dataForm.formatCellValue(data.getC1())+ "\"" + "," 
+						+ "\"" + dataForm.formatCellValue(data.getC2())+ "\"" + "," 
+						+ "\"" + dataForm.formatCellValue(data.getC3())+ "\"" + "," 
+						+ "\"" + dataForm.formatCellValue(data.getC4())+ "\"");
+						
+			}	
 		}
-		System.out.println("Done");
+		else {
+			for(int i = 2; i<row.size();i++) {
+				DataPool data = row.get(i);
+				lines.add("\"" + fileNum + "\"" + "," 
+						+ "\"" + dataForm.formatCellValue(data.getC0())+ "\"" + "," 
+						+ "\"" + dataForm.formatCellValue(data.getC1())+ "\"" + "," 
+						+ "\"" + dataForm.formatCellValue(data.getC2())+ "\"" + "," 
+						+ "\"" + dataForm.formatCellValue(data.getC3())+ "\"" + "," 
+						+ "\"" + dataForm.formatCellValue(data.getC4())+ "\"") ;
+			}
+		}
+		
 	}
 }
