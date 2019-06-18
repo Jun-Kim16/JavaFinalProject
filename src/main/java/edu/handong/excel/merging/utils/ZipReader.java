@@ -25,11 +25,11 @@ public class ZipReader {
 				ZipArchiveEntry entry = entries.nextElement();
 				InputStream stream = zipFile.getInputStream(entry);
 				
-				if(entry.getName().contains("요약문")) {
+				if(entry.getName().contains("요약문")&&entry.getName().contains("통일한국개론자료수집")) {
 					ArrayList<DataPool> summaryRows = reader.getData(stream, 1);
 					hm.put(num+"_1", summaryRows);
 				}
-				else if(entry.getName().contains("표.그림")) {
+				else if(entry.getName().contains("표.그림")&&entry.getName().contains("통일한국개론자료수집")) {
 					ArrayList<DataPool> tableRows = reader.getData(stream, 2);
 					hm.put(num+"_2", tableRows);
 				}
