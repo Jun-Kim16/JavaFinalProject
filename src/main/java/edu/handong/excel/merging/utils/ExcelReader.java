@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 
+import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
@@ -23,17 +24,21 @@ public class ExcelReader {
 		    
 		        Workbook wb = WorkbookFactory.create(inp);
 		        Sheet sheet = wb.getSheetAt(0);
+		        DataFormatter dataForm = new DataFormatter();
 		        int rowNum = sheet.getPhysicalNumberOfRows();
 		        int columns = sheet.getRow(0).getLastCellNum();
 		        if(type==1) {
 			        for(i = 0; i< rowNum; i++) {
 			        	DataPool data = new DataPool(sheet.getRow(i));
+			        	if(dataForm.formatCellValue(data.getC0())==""&&dataForm.formatCellValue(data.getC1())=="")
+			        		continue;
 			        		rows.add(data);
 			        	}
-				    
 		        }else if(type==2) {
 		        	 for(i = 0; i< rowNum; i++) {
 		        		 DataPool data = new DataPool(sheet.getRow(i), true);
+		        		 if(dataForm.formatCellValue(data.getC0())==""&&dataForm.formatCellValue(data.getC1())=="")
+				        		continue;
 				         rows.add(data);
 		        	 }
 		        }
