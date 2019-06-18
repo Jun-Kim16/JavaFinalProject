@@ -11,12 +11,12 @@ import edu.handong.excel.merging.utils.WriteCsv;
 
 public class WritingThread extends Thread {
 
-	String outputPath = null;
-	int type = -1;
-	int rowNum = 0;
-	TreeMap<String, ArrayList<DataPool>> mapNumToExcel = null;
+	private String outputPath = null;
+	private int type = -1;
+	private int rowNum = 0;
+	private TreeMap<String, ArrayList<DataPool>> mapNumToExcel = null;
 	private DataFormatter dataForm = new DataFormatter();
-	ArrayList<String> lines = new ArrayList<String>();
+	private ArrayList<String> lines = new ArrayList<String>();
 	
 	public WritingThread(String path, int type, TreeMap<String, ArrayList<DataPool>> hm) {
 		outputPath = path;
