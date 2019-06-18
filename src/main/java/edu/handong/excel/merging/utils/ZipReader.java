@@ -35,12 +35,12 @@ public class ZipReader {
 				}
 					
 				else {
-					throw new dataErrorException(entry.getName());
+					throw new DataErrorException(entry.getName());
 				}
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
-		}catch (dataErrorException e) {
+		}catch (DataErrorException e) {
 			WriteCsv.writeErrorFile(e.geterrorlist(), "error.csv");
 		}
 	}
