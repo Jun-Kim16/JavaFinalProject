@@ -1,7 +1,5 @@
 package edu.handong.excel.merging;
 
-import java.io.File;
-
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -9,13 +7,10 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 
-import edu.handong.excel.merging.utils.dataErrorException;
-
 public class CliOptions {
 
 	private String inputPath = null;
-	private String outputPath1= null;
-	private String outputPath2= null;
+	private String outputPath= null;
 	private boolean help = false;
 	
 	public boolean parseOptions(Options options, String[] args) {
@@ -25,8 +20,7 @@ public class CliOptions {
 			CommandLine cmd = parser.parse(options, args);
 			
 			inputPath = cmd.getOptionValue("i");
-			outputPath1 = cmd.getOptionValue("o1");
-			outputPath2 = cmd.getOptionValue("o2");
+			outputPath = cmd.getOptionValue("o");
 			help = cmd.hasOption("h");
 		}catch (Exception e) {
 			System.out.println(e.getMessage());
@@ -46,14 +40,7 @@ public class CliOptions {
 				.required()
 				.build());
 		
-		options.addOption(Option.builder("o1").longOpt("output")
-				.desc("Set an output file path")
-				.hasArg()
-				.argName("Output path")
-				.required()
-				.build());
-		
-		options.addOption(Option.builder("o2").longOpt("output")
+		options.addOption(Option.builder("o").longOpt("output")
 				.desc("Set an output file path")
 				.hasArg()
 				.argName("Output path")
@@ -79,12 +66,10 @@ public class CliOptions {
 		return inputPath;
 	}
 
-	public String getOutputPath1() {
-		return outputPath1;
+	public String getOutputPath() {
+		return outputPath;
 	}
-	public String getOutputPath2() {
-		return outputPath2;
-	}
+
 
 	public boolean isHelp() {
 		return help;
